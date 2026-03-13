@@ -77,8 +77,8 @@ def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: p
             cost = compute_cost(train_X, train_y, theta)
             print(f"House: {house:10} | Iteration {i:4} | Cost: {cost:.4f}")
         
-        final_cost = compute_cost(train_X, train_y, theta)
-        print(f"House: {house:10} | Iteration {iterations} | Cost: {final_cost:.4f}")
+    final_cost = compute_cost(train_X, train_y, theta)
+    print(f"House: {house:10} | Iteration {iterations} | Cost: {final_cost:.4f}")
         
     return theta
 

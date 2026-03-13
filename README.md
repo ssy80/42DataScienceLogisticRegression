@@ -63,13 +63,13 @@ python pair_plot.py ./data/dataset_train.csv
 **3. Model Training**
 Train the logistic regression model on the training dataset. This will calculate the necessary weights and save them to a file (e.g., `weights.csv`):
 ```bash
-python logreg_train.py data/dataset_train.csv
+python logreg_train.py ./data/dataset_train.csv
 ```
 
 **4. Prediction**
 Use the trained weights to predict the houses of the students in the test dataset. This generates a `houses.csv` file with the final predictions:
 ```bash
-python logreg_predict.py data/dataset_test.csv weights.csv
+python logreg_predict.py ./data/dataset_test.csv weights.csv
 ```
 
 ### Error Handling
