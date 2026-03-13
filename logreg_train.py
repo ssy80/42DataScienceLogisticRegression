@@ -28,6 +28,23 @@ def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 
+def compute_cost(train_X, train_y, theta):
+    """
+    Compute the logistic loss (cost) for given features, labels, and weights.
+    Formula:
+        cost = -(1/m) * [y * log(prediction) + (1 - y) * log(1 - prediction)]
+    """
+
+    m  =  len(train_X)
+    prediction = sigmoid(train_X @ theta)
+
+    # Needed to add epislon to avoid log(0) which is undefined
+    epislon = 1e-15
+
+    cost = -(1/m) * np.sum(train_y * np.log(prediction + epislon) + (1 - train_y) * np.log(1 - prediction + epislon))
+    return cost
+
+
 def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: pd.DataFrame, learning_rate: float, iterations: int, house: str):
     """
     Train a binary logistic regression model using gradient descent
@@ -56,6 +73,13 @@ def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: p
         # Update weights for next iteration training
         theta -= (learning_rate * gradient)
 
+        if i % 100 == 0:
+            cost = compute_cost(train_X, train_y, theta)
+            print(f"House: {house:10} | Iteration {i:4} | Cost: {cost:.4f}")
+        
+        final_cost = compute_cost(train_X, train_y, theta)
+        print(f"House: {house:10} | Iteration {iterations} | Cost: {final_cost:.4f}")
+        
     return theta
 
 
