@@ -1,9 +1,11 @@
 #!/bin/bash 
 
+# Install system dependencies for Matplotlib GUI backend
+sudo apt update
+sudo apt install -y python3-tk
+
 # Create virtual environment
 python3 -m venv venv
-
-# Activate it
 source venv/bin/activate
 
 # Install dependencies
@@ -14,9 +16,8 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     exec "$SHELL"
 fi
 
-# To check if the virtual environment is activated
+# Verify environment
+echo "--- Environment Check ---"
 which python
-
-# To make sure tkinter is installed
-python3 -c "import tkinter; print('tkinter OK')"
-python3 -c "import matplotlib; import sys; print(matplotlib.get_backend(), sys.executable)"
+python -c "import tkinter; print('Tkinter: OK')"
+python -c "import matplotlib; print('Matplotlib Backend: ' + matplotlib.get_backend())"

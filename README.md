@@ -44,33 +44,42 @@ To clean up the virtual environment, output files and the cache files:
 source ./remove.sh
 ```
 
-### Execution
+### Execution (Mandatory)
 
 **1. Data Description**
 To view the statistical summary of the dataset:
 ```bash
-python describe.py data/dataset_train.csv
+python mandatory/describe.py data/dataset_train.csv
 ```
 
 **2. Data Visualization**
 To generate the visualizations used for feature selection and analysis:
 ```bash
-python histogram.py ./data/dataset_train.csv
-python scatter_plot.py ./data/dataset_train.csv
-python pair_plot.py ./data/dataset_train.csv
+python mandatory/histogram.py data/dataset_train.csv
+python mandatory/scatter_plot.py data/dataset_train.csv
+python mandatory/pair_plot.py data/dataset_train.csv
 ```
 
 **3. Model Training**
 Train the logistic regression model on the training dataset. This will calculate the necessary weights and save them to a file (e.g., `weights.csv`):
 ```bash
-python logreg_train.py ./data/dataset_train.csv
+python mandatory/logreg_train.py data/dataset_train.csv
 ```
 
 **4. Prediction**
 Use the trained weights to predict the houses of the students in the test dataset. This generates a `houses.csv` file with the final predictions:
 ```bash
-python logreg_predict.py ./data/dataset_test.csv weights.csv
+python mandatory/logreg_predict.py data/dataset_test.csv weights.csv
 ```
+
+### Execution (Bonus)
+
+**1. Data Visualization (Boxplot)**
+Generates an additional boxplot analysis:
+```bash
+python bonus/boxplot.py data/dataset_train.csv
+```
+
 
 ### Error Handling
 The scripts are built to handle various edge cases gracefully, such as:
