@@ -2,19 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-
-
-def load(path: str) -> pd.DataFrame:
-    """
-    Load a csv file path into a dataframe,
-    return the dataframe if success, else return None.
-    """
-    try:
-        df = pd.read_csv(path)
-    except Exception as e:
-        print(f"Error loading dataset: {str(e)}")
-        return None
-    return df
+from utils import load
 
 
 def plot_histogram(df: pd.DataFrame):
@@ -43,7 +31,7 @@ def plot_histogram(df: pd.DataFrame):
     print(f"Lowest standard deviation course: {std_house_values.idxmin()}")
 
     #Plot histogram
-    course = "Care of Magical Creatures"
+    course =  std_house_values.idxmin()
 
     # Define bin edges with width = 1
     min_score = int(np.floor(df[course].min()))
@@ -57,8 +45,8 @@ def plot_histogram(df: pd.DataFrame):
         x=course,
         hue="Hogwarts House",
         bins=bins,
-        multiple="layer",   # overlay houses
-        stat="count",       # y-axis = number of students
+        multiple="layer",
+        stat="count",
         alpha=0.5
     )
 
@@ -71,7 +59,9 @@ def plot_histogram(df: pd.DataFrame):
 
 
 def main():
-    """main()"""
+    """
+    main()
+    """
 
     try:
  

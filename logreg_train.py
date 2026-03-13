@@ -7,19 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-
-
-def load(path: str) -> pd.DataFrame:
-    """
-    Load a csv file path into a dataframe,
-    return the dataframe if success, else return None.
-    """
-    try:
-        df = pd.read_csv(path)
-    except Exception as e:
-        print(f"Error loading dataset: {str(e)}")
-        return None
-    return df
+from utils import load
 
 
 def save_data(weights_df: pd.DataFrame):

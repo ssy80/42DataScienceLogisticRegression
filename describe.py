@@ -1,29 +1,21 @@
 import pandas as pd
 import numpy as np
 import sys
-
-
-def load(path: str) -> pd.DataFrame:
-    """
-    Load a csv file path into a dataframe,
-    return the dataframe if success, else return None.
-    """
-    try:
-        df = pd.read_csv(path)
-    except Exception as e:
-        print(f"Error loading dataset: {str(e)}")
-        return None
-    return df
+from utils import load
 
 
 def drop_non_numerical_features(df: pd.DataFrame):
-    """Return a dataframe with only numerical columns."""
+    """
+    Return a dataframe with only numerical columns.
+    """
 
     return df.select_dtypes(include=[np.number])
 
 
 def get_count(series: pd.Series) -> int:
-    """Count non-null values in a series."""
+    """
+    Count non-null values in a series.
+    """
     
     count = 0
     for value in series:
@@ -36,7 +28,9 @@ def get_count(series: pd.Series) -> int:
 
 
 def get_mean(series: pd.Series) -> float:
-    """Compute mean manually, ignoring null values."""
+    """
+    Compute mean manually, ignoring null values.
+    """
 
     total = 0.0
     count = 0
@@ -54,7 +48,8 @@ def get_mean(series: pd.Series) -> float:
 
 
 def get_standard_deviation(series: pd.Series) -> float:
-    """Compute standard deviation manually, ignoring null values.
+    """
+    Compute standard deviation manually, ignoring null values.
         1)Compute the mean
         2)Subtract mean from each value
         3)Square the differences
@@ -87,7 +82,9 @@ def get_standard_deviation(series: pd.Series) -> float:
 
 
 def get_min(series: pd.Series):
-    """Compute min manually, ignoring null values."""
+    """
+    Compute min manually, ignoring null values.
+    """
 
     min_value = None
 
@@ -102,7 +99,9 @@ def get_min(series: pd.Series):
 
 
 def get_max(series: pd.Series):
-    """Compute max manually, ignoring null values."""
+    """
+    Compute max manually, ignoring null values.
+    """
 
     max_value = None
 
@@ -116,7 +115,9 @@ def get_max(series: pd.Series):
 
 
 def get_percent(series: pd.Series, percent: float) -> float:
-    """Compute percentile manually (linear interpolation), ignoring null values."""
+    """
+    Compute percentile manually (linear interpolation), ignoring null values.
+    """
 
     values = []
     for value in series:

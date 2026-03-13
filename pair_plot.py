@@ -3,19 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pandas.plotting import scatter_matrix
 import seaborn as sns
-
-
-def load(path: str) -> pd.DataFrame:
-    """
-    Load a csv file path into a dataframe,
-    return the dataframe if success, else return None.
-    """
-    try:
-        df = pd.read_csv(path)
-    except Exception as e:
-        print(f"Error loading dataset: {str(e)}")
-        return None
-    return df
+from utils import load
 
 
 def plot_pairplot(df: pd.DataFrame):
