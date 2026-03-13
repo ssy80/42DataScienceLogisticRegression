@@ -17,9 +17,7 @@ if [ -d "venv" ]; then
 elif [ -d ".venv" ]; then
     rm -rf .venv
     echo "Removed '.venv' directory."
-elif [ -d "my_env" ]; then
-    rm -rf my_env
-    echo "Removed 'my_env' directory."
+
 fi
 
 # 3. Remove generated output files from the logistic regression scripts

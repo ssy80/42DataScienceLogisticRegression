@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 from utils import load
 
 
@@ -49,11 +50,16 @@ def main():
     """main()"""
 
     try:
- 
-        dataset_train_filepath = "./data/dataset_train.csv"
+        if len(sys.argv) != 2:
+            print("Error: the arguments are bad")
+            return
 
+        dataset_train_filepath = str(sys.argv[1])
         data_df = load(dataset_train_filepath)
 
+        if data_df is None:
+            print("Error: failed to load data from dataframe. Check loading from train_filepath")
+            return
         plot_scatterplot(data_df)
 
     except Exception as e:

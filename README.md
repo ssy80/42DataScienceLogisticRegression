@@ -55,9 +55,9 @@ python describe.py data/dataset_train.csv
 **2. Data Visualization**
 To generate the visualizations used for feature selection and analysis:
 ```bash
-python histogram.py data/dataset_train.csv
-python scatter_plot.py data/dataset_train.csv
-python pair_plot.py data/dataset_train.csv
+python histogram.py ./data/dataset_train.csv
+python scatter_plot.py ./data/dataset_train.csv
+python pair_plot.py ./data/dataset_train.csv
 ```
 
 **3. Model Training**
