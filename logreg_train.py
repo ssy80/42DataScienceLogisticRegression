@@ -124,7 +124,13 @@ def preprocess_data(df: pd.DataFrame):
 
     y = df["Hogwarts House"]
 
-    to_drop_cols = ["Index", "First Name", "Last Name", "Birthday", "Best Hand", "Hogwarts House"]
+    to_drop_cols = ["Index",
+                    "First Name",
+                    "Last Name",
+                    "Birthday",
+                    "Best Hand",
+                    "Hogwarts House",
+                    "Care of Magical Creatures"]
     X = df.drop(columns=to_drop_cols)
 
     imputer = SimpleImputer(missing_values=np.nan, strategy='median')
@@ -189,7 +195,7 @@ def main():
         train_X, train_y = preprocess_data(train_df)
         test_X, test_y = preprocess_data(test_df)
         
-        weights = train_logistic_regression_multi(train_X, train_y, 0.01, 1000)
+        weights = train_logistic_regression_multi(train_X, train_y, 0.1, 10000)
 
         weights_df = pd.DataFrame(weights)
         save_data(weights_df)
