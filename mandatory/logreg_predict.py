@@ -40,7 +40,7 @@ def main():
             print("Error: failed to load data or weights")
             return
 
-        test_X, _ = preprocess_data(data_df)
+        test_X, _, _, _ = preprocess_data(data_df)
 
         predictions = predict(test_X, weights_df)
         

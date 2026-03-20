@@ -73,6 +73,7 @@ python mandatory/logreg_predict.py data/dataset_test.csv weights.csv
 ```
 
 ### Execution (Bonus)
+The bonus part introduces additional data visualization and advanced gradient descent algorithms.
 
 **1. Data Visualization (Boxplot)**
 Generates an additional boxplot analysis:
@@ -80,6 +81,18 @@ Generates an additional boxplot analysis:
 python bonus/boxplot.py data/dataset_train.csv
 ```
 
+**2. Advanced Optimization Algorithms**
+The bonus model training script supports Stochastic Gradient Descent (SGD) and Mini-Batch Gradient Descent via the `--algo` flag:
+```bash
+python bonus/logreg_train.py data/dataset_train.csv --algo sgd
+python bonus/logreg_train.py data/dataset_train.csv --algo minibatch
+```
+
+**3. Bonus Prediction**
+Use the bonus prediction script to evaluate the weights generated:
+```bash
+python bonus/logreg_predict.py data/dataset_test.csv weights.csv
+```
 
 ### Error Handling
 The scripts are built to handle various edge cases gracefully, such as:

@@ -8,6 +8,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from utils import load
+import argparse
 
 
 def save_data(weights_df: pd.DataFrame):
@@ -83,7 +84,104 @@ def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: p
     return theta
 
 
-def train_logistic_regression_multi(train_X: pd.DataFrame, train_y: pd.DataFrame, learning_rate: float, iterations: int):
+def train_logistic_regression_sgd(train_X: np.ndarray, train_y: np.ndarray, learning_rate: float, epochs: int, house: str):
+    """
+    Train a binary logistic regression model using stochastic gradient descent (SGD).
+
+    This function iteratively updates the weight vector by computing the gradient
+    of the logistic loss for each training sample and adjusting the weights in
+    the direction that minimizes the cost.
+
+    Runs for a number of epoch and returns the final weight vector 
+    Cost is printed every 10 epochs.
+    """
+
+    if not isinstance(train_X, np.ndarray) or not isinstance(train_y, np.ndarray):
+        raise TypeError("train_X and train_y must be numpy arrays.")
+    
+    if train_X.size == 0 or train_y.size == 0:
+        raise ValueError("Training data cannot be empty.")
+        
+    if train_X.shape[0] != train_y.shape[0]:
+        raise ValueError("The number of samples in train_X and train_y must be equal.")
+        
+    if learning_rate <= 0 or epochs <= 0:
+        raise ValueError("learning_rate and epochs must be strictly positive.")
+
+    m = len(train_X)
+    n = train_X.shape[1]
+    theta = np.zeros(n)
+
+    for epoch in range(epochs):
+        indices = np.random.permutation(m)
+        X_shuffled = train_X[indices]
+        y_shuffled = train_y[indices]
+
+        for i in range(m):
+            xi = X_shuffled[i]
+            yi = y_shuffled[i]
+
+            # Transform this to scalar to suit the shape of theta
+            prediction = sigmoid(np.dot(xi, theta))
+            error = prediction - yi
+            gradient = xi * error
+            theta -= learning_rate * gradient
+        
+        if epoch % 10 == 0:
+            cost = compute_cost(train_X, train_y, theta)
+            print(f"House: {house:10} | Epoch {epoch:4} | Cost: {cost:.4f}")
+
+    return theta
+
+def train_logistic_regression_minibatch(train_X: np.ndarray, train_y: np.ndarray, learning_rate: float, epochs: int, house: str, batch_size=32):
+    """
+    Train a binary logistic regression model using mini-batch gradient descent.
+
+    This function iteratively updates the weight vector by computing the gradient
+    of the logistic loss for mini-batches of training samples and adjusting the weights
+    in the direction that minimizes the cost.
+
+    Runs for a number of epoch and returns the final weight vector 
+    Cost is printed every 10 epochs.
+    """
+
+    if not isinstance(train_X, np.ndarray) or not isinstance(train_y, np.ndarray):
+        raise TypeError("train_X and train_y must be numpy arrays.")
+    
+    if train_X.size == 0 or train_y.size == 0:
+        raise ValueError("Training data cannot be empty.")
+        
+    if train_X.shape[0] != train_y.shape[0]:
+        raise ValueError("The number of samples in train_X and train_y must be equal.")
+        
+    if learning_rate <= 0 or epochs <= 0:
+        raise ValueError("learning_rate and epochs must be strictly positive.")
+    
+    n = train_X.shape[1]
+    m = len(train_X)
+    theta = np.zeros(n)
+
+    for epoch in range(epochs):
+        indices = np.random.permutation(m)
+        X_shuffled = train_X[indices]
+        y_shuffled = train_y[indices]
+
+        for i in range(0, m, batch_size):
+            xi = X_shuffled[i:i+batch_size]
+            yi = y_shuffled[i:i+batch_size]
+            
+            prediction = sigmoid(xi @ theta)
+            error = prediction - yi
+            gradient = xi.T @ error
+            theta -= (learning_rate * gradient)
+
+        if epoch % 100 == 0:
+            cost = compute_cost(train_X, train_y, theta)
+            print(f"House: {house:10} | Epoch {epoch:4} | Cost: {cost:.4f}")
+
+    return theta
+
+def train_logistic_regression_multi(train_X: np.ndarray, train_y: pd.Series, learning_rate: float, iterations: int, algorithm: str = "batch"):
     """
     Train a multi-class logistic regression model using the
     one-vs-rest (OvR) strategy and gradient descent.
@@ -98,20 +196,23 @@ def train_logistic_regression_multi(train_X: pd.DataFrame, train_y: pd.DataFrame
 
     houses = sorted(train_y.unique())
 
-    # Add Bias column (column of 1s) to X
     train_X = np.c_[np.ones((train_X.shape[0], 1)), train_X]
 
     for house in houses:
-        
-        y_binary = np.where(train_y == house, 1, 0) #train each class(1) vs others(0)
+        y_binary = np.where(train_y == house, 1, 0)
 
-        w = train_logistic_regression_gradient_descent(train_X, y_binary, learning_rate, iterations, house)
+        if algorithm == "sgd":
+            w = train_logistic_regression_sgd(train_X, y_binary, learning_rate, iterations, house)
+        elif algorithm == "minibatch": 
+            w = train_logistic_regression_minibatch(train_X, y_binary, learning_rate, iterations, house)
+        else:
+            w = train_logistic_regression_gradient_descent(train_X, y_binary, learning_rate, iterations, house)
         weights[house] = w
 
     return weights
 
 
-def preprocess_data(df: pd.DataFrame):
+def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
     """
     Preprocess the dataset by selecting features, handling missing values,
     and applying feature scaling.
@@ -133,14 +234,19 @@ def preprocess_data(df: pd.DataFrame):
                     "Care of Magical Creatures"]
     X = df.drop(columns=to_drop_cols)
 
-    imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
+    if imputer is None:
+        imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+        X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
+    else:
+        X = pd.DataFrame(imputer.transform(X), columns=X.columns)
 
-    #Standard Scaling
-    standard_scaler  = StandardScaler()
-    X = standard_scaler.fit_transform(X)
+    if standard_scaler is None:
+        standard_scaler  = StandardScaler()
+        X = standard_scaler.fit_transform(X)
+    else:
+        X = pd.DataFrame(standard_scaler.transform(X), columns=X.columns)
 
-    return (X, y)
+    return (X, y, imputer, standard_scaler)
 
 
 def predict(test_X: pd.DataFrame, weights_df: pd.DataFrame):
@@ -174,16 +280,33 @@ def main():
     """main()"""
 
     try:
-        if len(sys.argv) != 2:
-            print("Error: the arguments are bad")
-            return
+        parser = argparse.ArgumentParser(description="Train logistic regression models.")
+        parser.add_argument("dataset",
+                            help="Path to the training dataset CSV file")
+        parser.add_argument("--algo",
+                            choices=["batch", "sgd", "minibatch"],
+                            default="batch", 
+                            help="Optimization algorithm to use (default: batch)")
+        args = parser.parse_args()
 
-        data_filepath = str(sys.argv[1])
+        data_df = load(args.dataset)
         
-        data_df = load(data_filepath)
         if data_df is None:
             print("Error: failed to load data")
             return
+
+        if args.algo == "sgd":
+            print("Training using Stochastic Gradient Descent (SGD)...")
+            lr = 0.01
+            epochs = 100
+        elif args.algo == "minibatch":
+            print("Training using Mini-Batch Gradient Descent...")
+            lr = 0.05
+            epochs = 500
+        else:
+            print("Training using Batch Gradient Descent...")
+            lr = 0.1
+            epochs = 10000
 
         train_df, test_df = train_test_split(
                         data_df,
@@ -192,10 +315,10 @@ def main():
                         stratify=data_df["Hogwarts House"]
                     )
 
-        train_X, train_y = preprocess_data(train_df)
-        test_X, test_y = preprocess_data(test_df)
+        train_X, train_y, fitted_imputer, fitted_scaler = preprocess_data(train_df)
+        test_X, test_y, _, _ = preprocess_data(test_df, fitted_imputer, fitted_scaler)
         
-        weights = train_logistic_regression_multi(train_X, train_y, 0.1, 10000)
+        weights = train_logistic_regression_multi(train_X, train_y, lr, epochs, algorithm=args.algo)
 
         weights_df = pd.DataFrame(weights)
         save_data(weights_df)

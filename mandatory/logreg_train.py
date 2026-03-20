@@ -111,7 +111,7 @@ def train_logistic_regression_multi(train_X: pd.DataFrame, train_y: pd.DataFrame
     return weights
 
 
-def preprocess_data(df: pd.DataFrame):
+def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
     """
     Preprocess the dataset by selecting features, handling missing values,
     and applying feature scaling.
@@ -133,14 +133,19 @@ def preprocess_data(df: pd.DataFrame):
                     "Care of Magical Creatures"]
     X = df.drop(columns=to_drop_cols)
 
-    imputer = SimpleImputer(missing_values=np.nan, strategy='median')
-    X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
+    if imputer is None:
+        imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+        X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
+    else:
+        X = pd.DataFrame(imputer.transform(X), columns=X.columns)
 
-    #Standard Scaling
-    standard_scaler  = StandardScaler()
-    X = standard_scaler.fit_transform(X)
+    if standard_scaler is None:
+        standard_scaler  = StandardScaler()
+        X = standard_scaler.fit_transform(X)
+    else:
+        X = pd.DataFrame(standard_scaler.transform(X), columns=X.columns)
 
-    return (X, y)
+    return (X, y, imputer, standard_scaler)
 
 
 def predict(test_X: pd.DataFrame, weights_df: pd.DataFrame):
@@ -192,9 +197,9 @@ def main():
                         stratify=data_df["Hogwarts House"]
                     )
 
-        train_X, train_y = preprocess_data(train_df)
-        test_X, test_y = preprocess_data(test_df)
-        
+        train_X, train_y, fitted_imputer, fitted_scaler = preprocess_data(train_df)
+        test_X, test_y, _, _ = preprocess_data(test_df, fitted_imputer, fitted_scaler)
+
         weights = train_logistic_regression_multi(train_X, train_y, 0.1, 10000)
 
         weights_df = pd.DataFrame(weights)
