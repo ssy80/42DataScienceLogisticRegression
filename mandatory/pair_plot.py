@@ -20,7 +20,7 @@ def plot_pairplot(df: pd.DataFrame):
     4. Computes between-house variation by:
        - Calculating mean score per house
        - Computing the standard deviation of those means
-    5. Selects the top 4 features with the largest between-house variation,
+    5. Selects the top 5 features with the largest between-house variation,
        as these are most discriminative for classification.
     6. Displays a seaborn pair plot of the selected features, colored
        by "Hogwarts House".
@@ -42,15 +42,13 @@ def plot_pairplot(df: pd.DataFrame):
     # Drop features with correlation > 0.9
     to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]
     df_reduced = df_numeric.drop(columns=to_drop)
-    #print("Dropped due to high correlation:", to_drop)
-    #print("Remaining features:", df_reduced.columns)
 
     # Get between house variation
     mean_house_scores = df.groupby("Hogwarts House").mean(numeric_only=True)
     between_house_std = mean_house_scores.std()
 
     # Keep features with larger between-house variation
-    important_features = between_house_std.sort_values(ascending=False).head(4).index
+    important_features = between_house_std.sort_values(ascending=False).head(5).index
     #print("Top separating features:", important_features)
 
     cols = list(important_features) + ["Hogwarts House"]

@@ -37,6 +37,10 @@ def plot_scatterplot(df: pd.DataFrame):
     # Get best corr pair, upper.stack() convert to multiindex[row_label, column_label]
     max_corr = upper.stack().idxmax()     # get index(r, c) with highest corr value
 
+    max_corr_value = corr_matrix.loc[max_corr[0], max_corr[1]]
+    print(f"Highest correlation pair: {max_corr[0]} and {max_corr[1]}")
+    print(f"Correlation coefficient: {max_corr_value}")
+
     plt.figure()
     plt.scatter(df_numeric[max_corr[0]], df_numeric[max_corr[1]])
     plt.xlabel(max_corr[0])

@@ -28,7 +28,7 @@ def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 
-def compute_cost(train_X, train_y, theta):
+'''def compute_cost(train_X, train_y, theta):
     """
     Compute the logistic loss (cost) for given features, labels, and weights.
     Formula:
@@ -43,9 +43,10 @@ def compute_cost(train_X, train_y, theta):
 
     cost = -(1/m) * np.sum(train_y * np.log(prediction + epislon) + (1 - train_y) * np.log(1 - prediction + epislon))
     return cost
+'''
 
 
-def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: pd.DataFrame, learning_rate: float, iterations: int, house: str):
+def train_logistic_regression_gradient_descent(train_X: np.ndarray, train_y: pd.Series, learning_rate: float, iterations: int, house: str):
     """
     Train a binary logistic regression model using gradient descent
     in a one-vs-rest (OvR) classification setting.
@@ -73,17 +74,17 @@ def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: p
         # Update weights for next iteration training
         theta -= (learning_rate * gradient)
 
-        if i % 100 == 0:
-            cost = compute_cost(train_X, train_y, theta)
-            print(f"House: {house:10} | Iteration {i:4} | Cost: {cost:.4f}")
+        #if i % 100 == 0:
+            #cost = compute_cost(train_X, train_y, theta)
+            #print(f"House: {house:10} | Iteration {i:4} | Cost: {cost:.4f}")
         
-    final_cost = compute_cost(train_X, train_y, theta)
-    print(f"House: {house:10} | Iteration {iterations} | Cost: {final_cost:.4f}")
+    #final_cost = compute_cost(train_X, train_y, theta)
+    #print(f"House: {house:10} | Iteration {iterations} | Cost: {final_cost:.4f}")
         
     return theta
 
 
-def train_logistic_regression_multi(train_X: pd.DataFrame, train_y: pd.DataFrame, learning_rate: float, iterations: int):
+def train_logistic_regression_multi(train_X: pd.DataFrame, train_y: pd.Series, learning_rate: float, iterations: int):
     """
     Train a multi-class logistic regression model using the
     one-vs-rest (OvR) strategy and gradient descent.
@@ -118,10 +119,9 @@ def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
 
     This function separates the target variable ("Hogwarts House") from the
     input features, removes non-numeric or unused columns, imputes missing
-    values using the median strategy, and standardizes the features to have
+    values, and standardizes the features to have
     zero mean and unit variance.
     """
-
     y = df["Hogwarts House"]
 
     to_drop_cols = ["Index",
@@ -130,18 +130,32 @@ def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
                     "Birthday",
                     "Best Hand",
                     "Hogwarts House",
-                    "Care of Magical Creatures"]
+                    "Care of Magical Creatures",
+                    "Potions",
+                    "Divination",
+                    "Herbology",
+                    "History of Magic",
+                    #"Arithmancy",
+                    #"Astronomy",
+                    #"Defense Against the Dark Arts",
+                    #"Muggle Studies",
+                    #"Ancient Runes",
+                    #"Transfiguration",
+                    #"Charms",
+                    #"Flying"
+                    ]
     X = df.drop(columns=to_drop_cols)
 
     if imputer is None:
-        imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+        #imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+        imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value=0)
         X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
     else:
         X = pd.DataFrame(imputer.transform(X), columns=X.columns)
-
+    
     if standard_scaler is None:
         standard_scaler  = StandardScaler()
-        X = standard_scaler.fit_transform(X)
+        X = pd.DataFrame(standard_scaler.fit_transform(X), columns=X.columns)
     else:
         X = pd.DataFrame(standard_scaler.transform(X), columns=X.columns)
 
@@ -169,7 +183,7 @@ def predict(test_X: pd.DataFrame, weights_df: pd.DataFrame):
     probabilities = sigmoid(z)
 
     prediction_indices = np.argmax(probabilities, axis=1)
-    
+
     final_predictions = [houses[i] for i in prediction_indices]
 
     return final_predictions
@@ -204,7 +218,7 @@ def main():
 
         weights_df = pd.DataFrame(weights)
         save_data(weights_df)
-
+        
         # Get predictions for test_X set
         predictions = predict(test_X, weights_df)
 

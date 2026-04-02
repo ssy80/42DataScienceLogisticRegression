@@ -29,8 +29,9 @@ def plot_histogram(df: pd.DataFrame):
     
     #Standard deviation across houses
     std_house_values = mean_house_scores.std()
-    print(f"Lowest standard deviation course: {std_house_values.idxmin()}")
 
+    print(f"Lowest standard deviation course: {std_house_values.idxmin()}")
+    
     #Plot histogram
     course =  std_house_values.idxmin()
 
@@ -53,7 +54,7 @@ def plot_histogram(df: pd.DataFrame):
 
     plt.xlabel("Score")
     plt.ylabel("Number of Students")
-    plt.title("Care of Magical Creatures Score Distribution by House")
+    plt.title(f"{course} Score Distribution by House")
 
     plt.tight_layout()
     plt.show()

@@ -12,6 +12,7 @@ from utils import load
 
 def save_predictions(predictions: list):
     """
+    Save predictions to file
     """
     filename = "houses.csv"
     

@@ -46,7 +46,7 @@ def compute_cost(train_X, train_y, theta):
     return cost
 
 
-def train_logistic_regression_gradient_descent(train_X: pd.DataFrame, train_y: pd.DataFrame, learning_rate: float, iterations: int, house: str):
+def train_logistic_regression_gradient_descent(train_X: np.ndarray, train_y: pd.Series, learning_rate: float, iterations: int, house: str):
     """
     Train a binary logistic regression model using gradient descent
     in a one-vs-rest (OvR) classification setting.
@@ -219,7 +219,7 @@ def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
 
     This function separates the target variable ("Hogwarts House") from the
     input features, removes non-numeric or unused columns, imputes missing
-    values using the median strategy, and standardizes the features to have
+    values, and standardizes the features to have
     zero mean and unit variance.
     """
 
@@ -231,18 +231,32 @@ def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
                     "Birthday",
                     "Best Hand",
                     "Hogwarts House",
-                    "Care of Magical Creatures"]
+                    "Care of Magical Creatures",
+                    "Potions",
+                    "Divination",
+                    "Herbology",
+                    "History of Magic",
+                    #"Arithmancy",
+                    #"Astronomy",
+                    #"Defense Against the Dark Arts",
+                    #"Muggle Studies",
+                    #"Ancient Runes",
+                    #"Transfiguration",
+                    #"Charms",
+                    #"Flying"
+                    ]
     X = df.drop(columns=to_drop_cols)
 
     if imputer is None:
-        imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+        #imputer = SimpleImputer(missing_values=np.nan, strategy='median')
+        imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value=0)
         X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
     else:
         X = pd.DataFrame(imputer.transform(X), columns=X.columns)
 
     if standard_scaler is None:
         standard_scaler  = StandardScaler()
-        X = standard_scaler.fit_transform(X)
+        X = pd.DataFrame(standard_scaler.fit_transform(X), columns=X.columns)
     else:
         X = pd.DataFrame(standard_scaler.transform(X), columns=X.columns)
 
