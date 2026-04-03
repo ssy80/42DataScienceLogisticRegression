@@ -21,18 +21,12 @@ def plot_histogram(df: pd.DataFrame):
        grouped by Hogwarts House.
     """
 
-    #Drop index column
     df = df.drop(columns=["Index"])
-
-    #Mean score per house
     mean_house_scores = df.groupby("Hogwarts House").mean(numeric_only=True)
-    
-    #Standard deviation across houses
     std_house_values = mean_house_scores.std()
 
     print(f"Lowest standard deviation course: {std_house_values.idxmin()}")
     
-    #Plot histogram
     course =  std_house_values.idxmin()
 
     # Define bin edges with width = 1

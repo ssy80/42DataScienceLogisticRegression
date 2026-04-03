@@ -38,8 +38,6 @@ def compute_cost(train_X, train_y, theta):
 
     m  =  len(train_X)
     prediction = sigmoid(train_X @ theta)
-
-    # Needed to add epislon to avoid log(0) which is undefined
     epislon = 1e-15
 
     cost = -(1/m) * np.sum(train_y * np.log(prediction + epislon) + (1 - train_y) * np.log(1 - prediction + epislon))
@@ -57,21 +55,16 @@ def train_logistic_regression_gradient_descent(train_X: np.ndarray, train_y: pd.
     optimized by minimizing the logistic loss using gradient descent.
     """
 
-    # Initialize weights (theta) to zeros
     theta = np.zeros(train_X.shape[1])
 
-    m = len(train_X) # number of rows or observations
+    m = len(train_X)
 
     for i in range(iterations):
 
-        # Calculate the prediction error
-        prediction = sigmoid(train_X @ theta) #0-1 probality
+        prediction = sigmoid(train_X @ theta)
         error = prediction - train_y
 
-        # Calculate the gradient (partial derivative)
         gradient = (1/m) * (train_X.T @ error)
-
-        # Update weights for next iteration training
         theta -= (learning_rate * gradient)
 
         if i % 100 == 0:
@@ -121,7 +114,6 @@ def train_logistic_regression_sgd(train_X: np.ndarray, train_y: np.ndarray, lear
             xi = X_shuffled[i]
             yi = y_shuffled[i]
 
-            # Transform this to scalar to suit the shape of theta
             prediction = sigmoid(np.dot(xi, theta))
             error = prediction - yi
             gradient = xi * error
@@ -248,7 +240,6 @@ def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
     X = df.drop(columns=to_drop_cols)
 
     if imputer is None:
-        #imputer = SimpleImputer(missing_values=np.nan, strategy='median')
         imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value=0)
         X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
     else:
@@ -278,7 +269,7 @@ def predict(test_X: pd.DataFrame, weights_df: pd.DataFrame):
     houses = weights_df.columns.tolist()
     theta = weights_df.values
     
-    test_X = np.c_[np.ones((test_X.shape[0], 1)), test_X] # insert bias
+    test_X = np.c_[np.ones((test_X.shape[0], 1)), test_X]
 
     z = test_X @ theta
     probabilities = sigmoid(z)
@@ -337,10 +328,7 @@ def main():
         weights_df = pd.DataFrame(weights)
         save_data(weights_df)
 
-        # Get predictions for test_X set
         predictions = predict(test_X, weights_df)
-
-        # Calculate accuracy for test_X, test_y
         score = accuracy_score(test_y, predictions)
         print(f"Accuracy: {score * 100:.2f}%")
 

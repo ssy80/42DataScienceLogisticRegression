@@ -22,20 +22,15 @@ def plot_scatterplot(df: pd.DataFrame):
     6. Displays a scatter plot of those two features.
     """
 
-    # Drop index column
     df = df.drop(columns=["Index"])
-
     df_numeric = df.select_dtypes(include="number")
 
     corr_matrix = df_numeric.corr().abs()
-
-    # Keep only upper triangle (exclude diagonal)
     upper = corr_matrix.where(
         np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
     )
 
-    # Get best corr pair, upper.stack() convert to multiindex[row_label, column_label]
-    max_corr = upper.stack().idxmax()     # get index(r, c) with highest corr value
+    max_corr = upper.stack().idxmax()
 
     max_corr_value = corr_matrix.loc[max_corr[0], max_corr[1]]
     print(f"Highest correlation pair: {max_corr[0]} and {max_corr[1]}")

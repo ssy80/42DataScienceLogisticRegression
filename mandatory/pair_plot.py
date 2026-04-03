@@ -26,30 +26,21 @@ def plot_pairplot(df: pd.DataFrame):
        by "Hogwarts House".
     """
 
-    # Drop index column
     df = df.drop(columns=["Index"])
-
     df_numeric = df.select_dtypes(include="number")
 
-    # Get correlation matrix
     corr_matrix = df_numeric.corr().abs()
-
-    # Keep only upper triangle
     upper = corr_matrix.where(
         np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
     )
 
-    # Drop features with correlation > 0.9
     to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]
     df_reduced = df_numeric.drop(columns=to_drop)
 
-    # Get between house variation
     mean_house_scores = df.groupby("Hogwarts House").mean(numeric_only=True)
     between_house_std = mean_house_scores.std()
 
-    # Keep features with larger between-house variation
     important_features = between_house_std.sort_values(ascending=False).head(5).index
-    #print("Top separating features:", important_features)
 
     cols = list(important_features) + ["Hogwarts House"]
 

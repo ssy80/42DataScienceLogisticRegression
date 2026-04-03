@@ -28,24 +28,6 @@ def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 
-'''def compute_cost(train_X, train_y, theta):
-    """
-    Compute the logistic loss (cost) for given features, labels, and weights.
-    Formula:
-        cost = -(1/m) * [y * log(prediction) + (1 - y) * log(1 - prediction)]
-    """
-
-    m  =  len(train_X)
-    prediction = sigmoid(train_X @ theta)
-
-    # Needed to add epislon to avoid log(0) which is undefined
-    epislon = 1e-15
-
-    cost = -(1/m) * np.sum(train_y * np.log(prediction + epislon) + (1 - train_y) * np.log(1 - prediction + epislon))
-    return cost
-'''
-
-
 def train_logistic_regression_gradient_descent(train_X: np.ndarray, train_y: pd.Series, learning_rate: float, iterations: int, house: str):
     """
     Train a binary logistic regression model using gradient descent
@@ -57,21 +39,15 @@ def train_logistic_regression_gradient_descent(train_X: np.ndarray, train_y: pd.
     optimized by minimizing the logistic loss using gradient descent.
     """
 
-    # Initialize weights (theta) to zeros
     theta = np.zeros(train_X.shape[1])
-
-    m = len(train_X) # number of rows or observations
+    m = len(train_X)
 
     for i in range(iterations):
 
-        # Calculate the prediction error
-        prediction = sigmoid(train_X @ theta) #0-1 probality
+        prediction = sigmoid(train_X @ theta)
         error = prediction - train_y
 
-        # Calculate the gradient (partial derivative)
         gradient = (1/m) * (train_X.T @ error)
-
-        # Update weights for next iteration training
         theta -= (learning_rate * gradient)
 
         #if i % 100 == 0:
@@ -104,7 +80,7 @@ def train_logistic_regression_multi(train_X: pd.DataFrame, train_y: pd.Series, l
 
     for house in houses:
         
-        y_binary = np.where(train_y == house, 1, 0) #train each class(1) vs others(0)
+        y_binary = np.where(train_y == house, 1, 0)
 
         w = train_logistic_regression_gradient_descent(train_X, y_binary, learning_rate, iterations, house)
         weights[house] = w
@@ -147,7 +123,6 @@ def preprocess_data(df: pd.DataFrame, imputer=None, standard_scaler=None):
     X = df.drop(columns=to_drop_cols)
 
     if imputer is None:
-        #imputer = SimpleImputer(missing_values=np.nan, strategy='median')
         imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value=0)
         X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
     else:
@@ -177,7 +152,7 @@ def predict(test_X: pd.DataFrame, weights_df: pd.DataFrame):
     houses = weights_df.columns.tolist()
     theta = weights_df.values
     
-    test_X = np.c_[np.ones((test_X.shape[0], 1)), test_X] # insert bias
+    test_X = np.c_[np.ones((test_X.shape[0], 1)), test_X]
 
     z = test_X @ theta
     probabilities = sigmoid(z)
@@ -219,10 +194,7 @@ def main():
         weights_df = pd.DataFrame(weights)
         save_data(weights_df)
         
-        # Get predictions for test_X set
         predictions = predict(test_X, weights_df)
-
-        # Calculate accuracy for test_X, test_y
         score = accuracy_score(test_y, predictions)
         print(f"Accuracy: {score * 100:.2f}%")
 

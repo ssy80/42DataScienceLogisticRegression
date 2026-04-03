@@ -246,10 +246,7 @@ def describe(df: pd.DataFrame)-> pd.DataFrame:
         - Maximum
     """
 
-    # Drop index column
     df = df.drop(columns=["Index"])
-
-    # Drop non-numerical featutres
     df = drop_non_numerical_features(df)
 
     describe_dict = {}
